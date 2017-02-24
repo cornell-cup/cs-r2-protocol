@@ -1,0 +1,1 @@
+G00SMotor 1DNUCP&Motor has moved 45 degreesK{length}{checksum}G01
