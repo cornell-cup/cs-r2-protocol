@@ -1,0 +1,6 @@
+start
+source = Motor 1
+destination = NUC
+data = Motor has moved 45 degrees
+checksum = 56e1
+end

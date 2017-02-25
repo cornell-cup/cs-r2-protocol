@@ -9,6 +9,10 @@ if (action === "decode") {
     if (params) {
         data = [
             params.start ? "start" : "",
+            "source = " + (params.source || ""),
+            "destination = " + (params.destination || ""),
+            "data = " + (params.data || ""),
+            "checksum = " + (params.checksum || ""),
             params.end ? "end" : ""
         ].join("\n");
     }
@@ -30,6 +34,7 @@ else if (action === "encode") {
     }
     if (params["start"] && params["source"] && params["destination"] && params["data"] && params["checksum"] && params["end"]) {
         data = r2i.encode(params);
+        // TODO compare checksum
     }
     else {
         data = "invalid";

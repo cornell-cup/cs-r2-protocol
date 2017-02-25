@@ -14,9 +14,9 @@ if __name__=="__main__":
         { # javascript
             "execArgs": ["node", "src/r2interface-test.js"]
         },
-        { # python
-            "execArgs": ["python", "src/r2interface-test.py"]
-        }
+        #{ # python
+        #    "execArgs": ["python", "src/r2interface-test.py"]
+        #}
     ]
     
     for impl in implementations:
@@ -29,3 +29,5 @@ if __name__=="__main__":
         assert(checkEqual(TEST_DECODED, TEMP_OUTPUT))
         subprocess.call(impl["execArgs"] + ["encode", TEST_DECODED, TEMP_OUTPUT])
         assert(checkEqual(TEST_ENCODED, TEMP_OUTPUT))
+    
+    print("Done")
