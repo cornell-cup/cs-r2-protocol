@@ -1,5 +1,5 @@
 const fs = require("fs");
-const r2i = require("./r2interface.js");
+const r2i = require("./R2Protocol.js");
 
 const action = process.argv[2];
 const input = fs.readFileSync(process.argv[3]);
