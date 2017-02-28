@@ -29,7 +29,7 @@ module.exports.decode = function(input) {
     }
     let index = start + 3;
     params.start = true;
-    
+
     let end = false;
     while (!end && index < input.length) {
         let key = String.fromCharCode(input.readUInt8(index++));
