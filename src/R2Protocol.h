@@ -41,7 +41,65 @@ namespace R2Protocol {
     }
 
     Packet decode(std::vector<uint8_t>& data) {
+        Packet params;
+        let start = input.indexOf("G00");
+        if (start < 0) {
+            throw new Error("Cannot find starting sequence");
+        }
+        let index = start + 3;
+        params.start = true;
 
+        let end = false;
+        while (!end && index < input.length) {
+            let key = String.fromCharCode(input.readUInt8(index++));
+            if (key === "S") {
+                let len = input.readUInt8(index++);
+                params.source = input.slice(index, index + len);
+                index += len;
+            }
+            else if (key === "D") {
+                let len = input.readUInt8(index++);
+                params.destination = input.slice(index, index + len);
+                index += len;
+            }
+            else if (key === "P") {
+                let len = input.readUInt32LE(index);
+                index += 4;
+                params.data = input.slice(index, index + len);
+                index += len;
+            }
+            else if (key === "G") {
+                let len = 2;
+                if (input.toString("utf8", index, index + len) === "01") {
+                    params.end = true;
+                    index += 2;
+                    end = true;
+                }
+            }
+            else if (key === "K") {
+                const checksum = computeChecksum(input.slice(start, index-1));
+                let len = input.readUInt8(index++);
+                params.checksum = input.toString("hex", index, index + len);
+                if (checksum !== params.checksum) {
+                    throw new Error("Checksum does not match " + checksum + " !== " + params.checksum);
+                }
+                index += len;
+            }
+        }
+        if (params["start"] && params["source"] && params["destination"] && params["data"] && params["checksum"] && params["end"]) {
+            return params;
+        }
+        else {
+            console.log([
+                params["start"],
+                params["source"],
+                params["destination"],
+                params["data"],
+                params["checksum"],
+                params["end"]
+            ]);
+            throw new Error("Missing values");
+        }
     }
 
     uint32_t writeString(std::vector<uint8_t>& buf, uint32_t index, std::string str) {
