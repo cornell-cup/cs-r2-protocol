@@ -11,6 +11,7 @@ if (action === "decode") {
             params.start ? "start" : "",
             "source = " + (params.source || ""),
             "destination = " + (params.destination || ""),
+            "id = " + (params.id || ""),
             "data = " + (params.data || ""),
             "checksum = " + (params.checksum || ""),
             params.end ? "end" : ""

@@ -10,6 +10,7 @@ namespace R2Protocol {
     struct Packet {
         std::string source;
         std::string destination;
+        std::string id;
         std::vector<uint8_t> data;
         std::string checksum;
     };
@@ -107,6 +108,11 @@ namespace R2Protocol {
                 index += readByte(input, index, len);
                 index += readString(input, index, len, params.destination);
             }
+            else if (key == 'T') {
+                uint8_t len;
+                index += readByte(input, index, len);
+                index += readString(input, index, len, params.id);
+            }
             else if (key == 'P') {
                 uint32_t len;
                 index += readInt(input, index, len);
@@ -170,6 +176,8 @@ namespace R2Protocol {
             params.source.length() + // source
             2 + // D{length1} destination
             params.destination.length() + // destination
+            2 + // T{length1} transaction id
+            params.id.length() + // transaction id
             5 + // P{length4}
             params.data.size() + // data
             4 + // K{length}{data} checksum
@@ -183,6 +191,9 @@ namespace R2Protocol {
         index += writeString(output, index, "D");
         index += writeByte(output, index, params.destination.length());
         index += writeString(output, index, params.destination);
+        index += writeString(output, index, "T");
+        index += writeByte(output, index, params.id.length());
+        index += writeString(output, index, params.id);
         index += writeString(output, index, "P");
         index += writeInt(output, index, params.data.size());
         index += writeBytes(output, index, params.data);

@@ -43,6 +43,11 @@ module.exports.decode = function(input) {
             params.destination = input.slice(index, index + len);
             index += len;
         }
+        else if (key === "T") {
+            let len = input.readUInt8(index++);
+            params.id = input.slice(index, index + len);
+            index += len;
+        }
         else if (key === "P") {
             let len = input.readUInt32LE(index);
             index += 4;
@@ -67,7 +72,8 @@ module.exports.decode = function(input) {
             index += len;
         }
     }
-    if (params["start"] && params["source"] && params["destination"] && params["data"] && params["checksum"] && params["end"]) {
+    if (params["start"] && params["source"] && params["destination"] && params["id"] &&
+            params["data"] && params["checksum"] && params["end"]) {
         return params;
     }
     else {
@@ -75,6 +81,7 @@ module.exports.decode = function(input) {
             params["start"],
             params["source"],
             params["destination"],
+            params["id"],
             params["data"],
             params["checksum"],
             params["end"]
@@ -84,7 +91,17 @@ module.exports.decode = function(input) {
 }
 
 module.exports.encode = function(params) {
-    const len = 3 + 2 + params.source.length + 2 + params.destination.length + 5 + params.data.length + 4 + 3;
+    const len = 3 + // G00 start
+        2 + // S{length1} source
+        params.source.length + // source
+        2 + // D{length1} destination
+        params.destination.length + // destination
+        2 + // T{length1} transaction id
+        params.id.length + // transaction id
+        5 + // P{length4}
+        params.data.length + // data
+        4 + // K{length}{data} checksum
+        3; // G01 end
     const buf = new Buffer(len);
     let index = 0;
     index += buf.write("G00", index);
@@ -94,6 +111,9 @@ module.exports.encode = function(params) {
     index += buf.write("D", index);
     index  = buf.writeUInt8(params.destination.length, index);
     index += buf.write(params.destination, index);
+    index += buf.write("T", index);
+    index  = buf.writeUInt8(params.id.length, index);
+    index += buf.write(params.id, index);
     index += buf.write("P", index);
     index  = buf.writeUInt32LE(params.data.length, index);
     index += buf.write(params.data, index);

@@ -28,6 +28,9 @@ int main(int argc, char ** argv) {
             fout.write("destination = ", 14);
             fout.write((char *) &params.destination[0], params.destination.size());
             fout.write("\n", 1);
+            fout.write("id = ", 5);
+            fout.write((char *) &params.id[0], params.id.size());
+            fout.write("\n", 1);
             fout.write("data = ", 7);
             fout.write((char *) &params.data[0], params.data.size());
             fout.write("\n", 1);
@@ -56,6 +59,9 @@ int main(int argc, char ** argv) {
                 }
                 else if (key == "destination") {
                     params.destination = value;
+                }
+                else if (key == "id") {
+                    params.id = value;
                 }
                 else if (key == "data") {
                     params.data = std::vector<unsigned char>(value.c_str(), value.c_str() + value.size());
