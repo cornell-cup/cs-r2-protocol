@@ -1,4 +1,5 @@
 import filecmp
+import os
 import subprocess
 
 
@@ -9,6 +10,9 @@ if __name__=="__main__":
     TEST_ENCODED = "data/encoded.data"
     TEST_DECODED = "data/decoded.data"
     TEMP_OUTPUT = "tmp/data"
+
+    if not os.path.isdir("tmp"):
+        os.mkdir("tmp")
 
     implementations = [
         { # javascript
