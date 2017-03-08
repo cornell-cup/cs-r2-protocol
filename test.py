@@ -21,12 +21,14 @@ if __name__=="__main__":
         },
         { # C++
             "name": "C++",
-            "setupArgs": ["g++", "-std=c++11", "src/R2ProtocolTest.cpp", "-I", "src", "-o", "tmp/R2Protocol.exe"],
-            "execArgs": ["tmp/R2Protocol.exe"]
+            "setupArgs": ["g++", "-std=c++11", "src/R2ProtocolTest.cpp", "-I", "src", "-o", "tmp/R2ProtocolCPP.exe"],
+            "execArgs": ["tmp/R2ProtocolCPP.exe"]
         },
-        #{ # python
-        #    "execArgs": ["python", "src/r2interface-test.py"]
-        #}
+        { # C
+            "name": "C",
+            "setupArgs": ["gcc", "src/R2ProtocolTest.c", "-I", "src", "-o", "tmp/R2ProtocolC.exe"],
+            "execArgs": ["tmp/R2ProtocolC.exe"]
+        },
     ]
 
     for impl in implementations:
