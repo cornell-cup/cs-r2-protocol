@@ -29,6 +29,10 @@ if __name__=="__main__":
             "setupArgs": ["gcc", "src/R2ProtocolTest.c", "-I", "src", "-o", "tmp/R2ProtocolC.exe"],
             "execArgs": ["tmp/R2ProtocolC.exe"]
         },
+        { # Python
+            "name": "Python",
+            "execArgs": ["python", "src/R2ProtocolTest.py"]
+        },
     ]
 
     for impl in implementations:
