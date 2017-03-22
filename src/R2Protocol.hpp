@@ -18,7 +18,7 @@ namespace R2Protocol {
     /**
      * Convert a two byte checksum to hex digits (big endian)
      */
-    std::string checksumToHex(uint16_t checksum) {
+    inline std::string checksumToHex(uint16_t checksum) {
         char hex[] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f' };
         char digits[] = {
             hex[(checksum >> 12) & 0xf],
@@ -32,7 +32,7 @@ namespace R2Protocol {
     /**
      * Compute the IPv4 checksum of data
      */
-    uint16_t computeChecksum(std::vector<uint8_t>& data, uint32_t start, uint32_t end) {
+    inline uint16_t computeChecksum(std::vector<uint8_t>& data, uint32_t start, uint32_t end) {
         uint32_t index;
         uint32_t sum = 0;
         for (index = start; index < end - 1; index+=2) {
@@ -50,7 +50,7 @@ namespace R2Protocol {
         return (uint16_t) (sum & 0xffff);
     }
 
-    uint32_t readString(std::vector<uint8_t>& buf, uint32_t index, uint32_t len, std::string& value) {
+    inline uint32_t readString(std::vector<uint8_t>& buf, uint32_t index, uint32_t len, std::string& value) {
         std::vector<char> str(len);
         for (uint32_t i = 0; i < len; i++) {
             str[i] = (char) buf[i + index];
@@ -59,12 +59,12 @@ namespace R2Protocol {
         return len;
     }
 
-    uint32_t readByte(std::vector<uint8_t>& buf, uint32_t index, uint8_t& value) {
+    inline uint32_t readByte(std::vector<uint8_t>& buf, uint32_t index, uint8_t& value) {
         value = buf[index];
         return 1;
     }
 
-    uint32_t readBytes(std::vector<uint8_t>& buf, uint32_t index, uint32_t len, std::vector<uint8_t>& value) {
+    inline uint32_t readBytes(std::vector<uint8_t>& buf, uint32_t index, uint32_t len, std::vector<uint8_t>& value) {
         value.resize(len);
         for (uint32_t i = 0; i < len; i++) {
             value[i] = buf[i + index];
@@ -72,12 +72,12 @@ namespace R2Protocol {
         return len;
     }
 
-    uint32_t readShort(std::vector<uint8_t>& buf, uint32_t index, uint16_t& value) {
+    inline uint32_t readShort(std::vector<uint8_t>& buf, uint32_t index, uint16_t& value) {
         value = (buf[index] << 8) | buf[index+1];
         return 2;
     }
 
-    uint32_t readInt(std::vector<uint8_t>& buf, uint32_t index, uint32_t& value) {
+    inline uint32_t readInt(std::vector<uint8_t>& buf, uint32_t index, uint32_t& value) {
         value = buf[index] | (buf[index+1] << 8) | (buf[index+2] << 16) | (buf[index+3] << 24);
         return 4;
     }
@@ -85,7 +85,7 @@ namespace R2Protocol {
     /**
      * Decode the data, returning the index where the data reading finishes, or negative if data failed to be read
      */
-    int32_t decode(std::vector<uint8_t>& input, Packet& params) {
+    inline int32_t decode(std::vector<uint8_t>& input, Packet& params) {
         uint32_t start = 0;
         while (start < input.size() - 3 && !(input[start] == 'G' && input[start + 1] == '0' && input[start + 2] == '0')) {
             start++;
@@ -140,26 +140,26 @@ namespace R2Protocol {
         return index;
     }
 
-    uint32_t writeString(std::vector<uint8_t>& buf, uint32_t index, std::string str) {
+    inline uint32_t writeString(std::vector<uint8_t>& buf, uint32_t index, std::string str) {
         for (int i = 0; i < str.length(); i++) {
             buf[i + index] = (uint8_t) str[i];
         }
         return str.length();
     }
 
-    uint32_t writeByte(std::vector<uint8_t>& buf, uint32_t index, uint8_t value) {
+    inline uint32_t writeByte(std::vector<uint8_t>& buf, uint32_t index, uint8_t value) {
         buf[index] = value;
         return 1;
     }
 
-    uint32_t writeBytes(std::vector<uint8_t>& buf, uint32_t index, std::vector<uint8_t>& value) {
+    inline uint32_t writeBytes(std::vector<uint8_t>& buf, uint32_t index, std::vector<uint8_t>& value) {
         for (int i = 0; i < value.size(); i++) {
             buf[i + index] = value[i];
         }
         return value.size();
     }
 
-    uint32_t writeInt(std::vector<uint8_t>& buf, uint32_t index, uint32_t value) {
+    inline uint32_t writeInt(std::vector<uint8_t>& buf, uint32_t index, uint32_t value) {
         buf[index  ] = (value >>  0) & 0xff;
         buf[index+1] = (value >>  8) & 0xff;
         buf[index+2] = (value >> 16) & 0xff;
@@ -170,7 +170,7 @@ namespace R2Protocol {
     /**
      * Encode the data, returning the size of the encoded data, or negative if data failed to be encoded
      */
-    int32_t encode(Packet params, std::vector<uint8_t>& output) {
+    inline int32_t encode(Packet params, std::vector<uint8_t>& output) {
         uint32_t len = 3 + // G00 start
             2 + // S{length1} source
             params.source.length() + // source
