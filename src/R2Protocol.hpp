@@ -141,10 +141,11 @@ namespace R2Protocol {
     }
 
     inline uint32_t writeString(std::vector<uint8_t>& buf, uint32_t index, std::string str) {
-        for (int i = 0; i < str.length(); i++) {
+        uint32_t l = str.length();
+        for (uint32_t i = 0; i < l; i++) {
             buf[i + index] = (uint8_t) str[i];
         }
-        return str.length();
+        return l;
     }
 
     inline uint32_t writeByte(std::vector<uint8_t>& buf, uint32_t index, uint8_t value) {
@@ -153,10 +154,11 @@ namespace R2Protocol {
     }
 
     inline uint32_t writeBytes(std::vector<uint8_t>& buf, uint32_t index, std::vector<uint8_t>& value) {
-        for (int i = 0; i < value.size(); i++) {
+        uint32_t l = value.size();
+        for (uint32_t i = 0; i < l; i++) {
             buf[i + index] = value[i];
         }
-        return value.size();
+        return l;
     }
 
     inline uint32_t writeInt(std::vector<uint8_t>& buf, uint32_t index, uint32_t value) {
