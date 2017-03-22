@@ -26,7 +26,7 @@ if __name__=="__main__":
         },
         { # C
             "name": "C",
-            "setupArgs": ["gcc", "src/R2ProtocolTest.c", "-I", "src", "-o", "tmp/R2ProtocolC.exe"],
+            "setupArgs": ["gcc", "--pedantic", "src/R2ProtocolTest.c", "-I", "src", "-o", "tmp/R2ProtocolC.exe"],
             "execArgs": ["tmp/R2ProtocolC.exe"]
         },
         { # Python

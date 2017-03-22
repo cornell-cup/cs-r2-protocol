@@ -89,7 +89,7 @@ int32_t R2ProtocolDecode(const uint8_t * input, uint32_t input_len, struct R2Pro
             index += len;
         }
         else if (key == 'K') {
-            uint16_t computedChecksum = R2ProtocolComputeChecksum(start, 0, index - 1 - start);
+            uint16_t computedChecksum = R2ProtocolComputeChecksum((uint8_t *) start, 0, index - 1 - start);
             uint8_t len = (uint8_t) (*(index++));
             uint16_t checksum = ((uint8_t) (*index) << 8) | ((uint8_t) (*(index + 1)));
             index += len;
@@ -112,7 +112,8 @@ int32_t R2ProtocolDecode(const uint8_t * input, uint32_t input_len, struct R2Pro
 
 uint32_t writeString(uint8_t * buf, const char * str) {
     uint32_t str_len = strlen(str);
-    for (int i = 0; i < str_len; i++) {
+    int i;
+    for (i = 0; i < str_len; i++) {
         buf[i] = (uint8_t) str[i];
     }
     return str_len;
@@ -124,7 +125,8 @@ uint32_t writeByte(uint8_t * buf, uint8_t value) {
 }
 
 uint32_t writeBytes(uint8_t * buf, uint8_t  * value, uint32_t value_len) {
-    for (int i = 0; i < value_len; i++) {
+    int i;
+    for (i = 0; i < value_len; i++) {
         buf[i] = value[i];
     }
     return value_len;
