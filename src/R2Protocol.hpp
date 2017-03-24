@@ -141,7 +141,7 @@ namespace R2Protocol {
     }
 
     inline uint32_t writeString(std::vector<uint8_t>& buf, uint32_t index, std::string str) {
-        uint32_t l = str.length();
+        uint32_t l = (uint32_t) str.length();
         for (uint32_t i = 0; i < l; i++) {
             buf[i + index] = (uint8_t) str[i];
         }
@@ -154,7 +154,7 @@ namespace R2Protocol {
     }
 
     inline uint32_t writeBytes(std::vector<uint8_t>& buf, uint32_t index, std::vector<uint8_t>& value) {
-        uint32_t l = value.size();
+        uint32_t l = (uint32_t) value.size();
         for (uint32_t i = 0; i < l; i++) {
             buf[i + index] = value[i];
         }
@@ -173,7 +173,8 @@ namespace R2Protocol {
      * Encode the data, returning the size of the encoded data, or negative if data failed to be encoded
      */
     inline int32_t encode(Packet params, std::vector<uint8_t>& output) {
-        uint32_t len = 3 + // G00 start
+        uint32_t len = (uint32_t) (
+            3 + // G00 start
             2 + // S{length1} source
             params.source.length() + // source
             2 + // D{length1} destination
@@ -183,21 +184,21 @@ namespace R2Protocol {
             5 + // P{length4}
             params.data.size() + // data
             4 + // K{length}{data} checksum
-            3; // G01 end
+            3); // G01 end
         output.resize(len);
         uint32_t index = 0;
         index += writeString(output, index, "G00");
         index += writeString(output, index, "S");
-        index += writeByte(output, index, params.source.length());
+        index += writeByte(output, index, (uint8_t) params.source.length());
         index += writeString(output, index, params.source);
         index += writeString(output, index, "D");
-        index += writeByte(output, index, params.destination.length());
+        index += writeByte(output, index, (uint8_t) params.destination.length());
         index += writeString(output, index, params.destination);
         index += writeString(output, index, "T");
-        index += writeByte(output, index, params.id.length());
+        index += writeByte(output, index, (uint8_t) params.id.length());
         index += writeString(output, index, params.id);
         index += writeString(output, index, "P");
-        index += writeInt(output, index, params.data.size());
+        index += writeInt(output, index, (uint8_t) params.data.size());
         index += writeBytes(output, index, params.data);
         uint16_t checksum = computeChecksum(output, 0, index);
         index += writeString(output, index, "K");
