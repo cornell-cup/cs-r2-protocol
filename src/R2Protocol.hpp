@@ -198,7 +198,7 @@ namespace R2Protocol {
         index += writeByte(output, index, (uint8_t) params.id.length());
         index += writeString(output, index, params.id);
         index += writeString(output, index, "P");
-        index += writeInt(output, index, (uint8_t) params.data.size());
+        index += writeInt(output, index, (uint32_t) params.data.size());
         index += writeBytes(output, index, params.data);
         uint16_t checksum = computeChecksum(output, 0, index);
         index += writeString(output, index, "K");
