@@ -37,19 +37,19 @@ def decode(input):
             (length,) = struct.unpack_from("B", input, offset=index)
             index += 1
             (source,) = struct.unpack_from("{}s".format(length), input, offset=index)
-            params["source"] = source.decode("ascii")
+            params["source"] = source
             index += length
         elif key == "D":
             (length,) = struct.unpack_from("B", input, offset=index)
             index += 1
             (destination,) = struct.unpack_from("{}s".format(length), input, offset=index)
-            params["destination"] = destination.decode("ascii")
+            params["destination"] = destination
             index += length
         elif key == "T":
             (length,) = struct.unpack_from("B", input, offset=index)
             index += 1
             (id,) = struct.unpack_from("{}s".format(length), input, offset=index)
-            params["id"] = id.decode("ascii")
+            params["id"] = id
             index += length
         elif key == "P":
             (length,) = struct.unpack_from("I", input, offset=index)
@@ -60,7 +60,7 @@ def decode(input):
             (length,) = struct.unpack_from("B", input, offset=index)
             index += 1
             (checksum,) = struct.unpack_from(">H", input, offset=index)
-            params["checksum"] = "{:04x}".format(checksum)
+            params["checksum"] = bytes("{:04x}".format(checksum), "ascii")
             index += length
         elif key == "G":
             k1, k2 = struct.unpack_from("c c", input, offset=index)
@@ -93,10 +93,10 @@ def encode(source, destination, id, data):
             len(data)
         ),
         bytes("G00", "ascii"),
-        bytes('S', "ascii"), len(source), bytes(source, "ascii"),
-        bytes('D', "ascii"), len(destination), bytes(destination, "ascii"),
-        bytes('T', "ascii"), len(id), bytes(id, "ascii"),
-        bytes('P', "ascii"), len(data), bytes(data, "ascii")
+        b'S', len(source), source,
+        b'D', len(destination), destination,
+        b'T', len(id), id,
+        b'P', len(data), data
     )
     checksum = struct.pack("> H", computeChecksum(body))
     encoded = struct.pack("< {}s c B {}s 3s".format(

@@ -9,37 +9,38 @@ if __name__=="__main__":
 
         f = open(sys.argv[3], 'wb')
         params = r2p.decode(data)
-        data = ""
+        data = b""
         if params is not None:
-            data += "start\n"
-            data += "source = {:s}\n".format(params["source"])
-            data += "destination = {:s}\n".format(params["destination"])
-            data += "id = {:s}\n".format(params["id"])
-            data += "data = {:s}\n".format(params["data"].decode("ascii"))
-            data += "checksum = {:s}\n".format(params["checksum"])
-            data += "end"
+            data += b"start\n"
+            data += b"source = " + params["source"] + b"\n"
+            data += b"destination = " + params["destination"] + b"\n"
+            data += b"id = " + params["id"] + b"\n"
+            data += b"data = " + params["data"] + b"\n"
+            data += b"checksum = " + params["checksum"] + b"\n"
+            data += b"end"
         else:
-            data += "invalid"
+            data += b"invalid"
 
-        f.write(bytes(data, "ascii"))
+        f.write(data)
         f.close()
 
     elif sys.argv[1] == "encode":
-        f = open(sys.argv[2], 'r')
+        f = open(sys.argv[2], 'rb')
         params = {}
         for line in f.readlines():
-            eq = line.find("=")
+            eq = line.find(b"=")
             if eq >= 0:
-                key = line[:eq].strip()
+                key = line[:eq].strip().decode("ascii")
                 value = line[eq+1:].strip()
                 params[key] = value
-
+        
         f.close()
 
-        f = open(sys.argv[3], 'wb')
         if "source" in params and "destination" in params and "id" in params and "data" in params:
             data = r2p.encode(params["source"], params["destination"], params["id"], params["data"])
         else:
-            data = "invalid"
+            data = b"invalid"
+        
+        f = open(sys.argv[3], 'wb')
         f.write(data)
         f.close()
