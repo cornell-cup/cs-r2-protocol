@@ -83,7 +83,9 @@ int32_t R2ProtocolDecode(const uint8_t * input, uint32_t input_len, struct R2Pro
             uint8_t len = ((uint8_t) (*index)) | ((uint8_t) (*(index + 1)) << 8) |
                     ((uint8_t) (*(index + 2)) << 16) | ((uint8_t) (*(index + 3)) << 24);
             index += 4;
-            params->data = (uint8_t *) malloc(len * sizeof(uint8_t));
+            if (len > params->data_len) {
+                len = params->data_len;
+            }
             memcpy(params->data, (uint8_t *) index, len);
             params->data_len = len;
             index += len;
@@ -143,7 +145,7 @@ uint32_t writeInt(uint8_t * buf, uint32_t value) {
 /**
  * Encode the data, returning the size of the encoded data, or negative if data failed to be encoded
  */
-int32_t R2ProtocolEncode(struct R2ProtocolPacket * params, uint8_t ** output) {
+int32_t R2ProtocolEncode(struct R2ProtocolPacket * params, uint8_t * output, uint32_t output_len) {
     uint32_t len = 3 + // G00 start
         2 + // S{length1} source
         strlen(params->source) + // source
@@ -155,27 +157,29 @@ int32_t R2ProtocolEncode(struct R2ProtocolPacket * params, uint8_t ** output) {
         params->data_len + // data
         4 + // K{length}{data} checksum
         3; // G01 end
-    (*output) = (uint8_t *) malloc(len * sizeof(uint8_t));
+    if (len > output_len) {
+        return -2;
+    }
     uint32_t index = 0;
-    index += writeString((*output) + index, "G00");
-    index += writeString((*output) + index, "S");
-    index += writeByte((*output) + index, strlen(params->source));
-    index += writeString((*output) + index, params->source);
-    index += writeString((*output) + index, "D");
-    index += writeByte((*output) + index, strlen(params->destination));
-    index += writeString((*output) + index, params->destination);
-    index += writeString((*output) + index, "T");
-    index += writeByte((*output) + index, strlen(params->id));
-    index += writeString((*output) + index, params->id);
-    index += writeString((*output) + index, "P");
-    index += writeInt((*output) + index, params->data_len);
-    index += writeBytes((*output) + index, params->data, params->data_len);
-    uint16_t checksum = R2ProtocolComputeChecksum((*output), 0, index);
-    index += writeString((*output) + index, "K");
-    index += writeByte((*output) + index, 2);
-    index += writeByte((*output) + index, (checksum >> 8) & 0xff);
-    index += writeByte((*output) + index, (checksum >> 0) & 0xff);
-    index += writeString((*output) + index, "G01");
+    index += writeString(output + index, "G00");
+    index += writeString(output + index, "S");
+    index += writeByte(output + index, strlen(params->source));
+    index += writeString(output + index, params->source);
+    index += writeString(output + index, "D");
+    index += writeByte(output + index, strlen(params->destination));
+    index += writeString(output + index, params->destination);
+    index += writeString(output + index, "T");
+    index += writeByte(output + index, strlen(params->id));
+    index += writeString(output + index, params->id);
+    index += writeString(output + index, "P");
+    index += writeInt(output + index, params->data_len);
+    index += writeBytes(output + index, params->data, params->data_len);
+    uint16_t checksum = R2ProtocolComputeChecksum(output, 0, index);
+    index += writeString(output + index, "K");
+    index += writeByte(output + index, 2);
+    index += writeByte(output + index, (checksum >> 8) & 0xff);
+    index += writeByte(output + index, (checksum >> 0) & 0xff);
+    index += writeString(output + index, "G01");
     return len;
 }
 

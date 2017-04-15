@@ -85,9 +85,9 @@ int main(int argc, char ** argv) {
         fclose(fin);
 
         FILE * fout = fopen(argv[3], "wb");
-        uint8_t * output;
+        uint8_t output[4096];
         int32_t output_len;
-        if ((output_len = R2ProtocolEncode(&params, &output)) >= 0) {
+        if ((output_len = R2ProtocolEncode(&params, output, 4096)) >= 0) {
             fwrite(output, 1, output_len, fout);
         }
         else {
