@@ -85,7 +85,7 @@ namespace R2Protocol {
     /**
      * Decode the data, returning the index where the data reading finishes, or negative if data failed to be read
      */
-    inline int32_t decode(std::vector<uint8_t>& input, Packet& params) {
+    inline int32_t decode(std::vector<uint8_t>& input, Packet& params, bool skip_checksum = 0) {
         uint32_t start = 0;
         while (start < input.size() - 3 && !(input[start] == 'G' && input[start + 1] == '0' && input[start + 2] == '0')) {
             start++;
@@ -124,7 +124,7 @@ namespace R2Protocol {
                 uint8_t len;
                 index += readByte(input, index, len);
                 index += readShort(input, index, checksum);
-                if (computedChecksum != checksum) {
+                if (!skip_checksum && computedChecksum != checksum) {
                     printf("Checksum does not match %d != %d\n", computedChecksum, checksum);
                     return -1;
                 }
