@@ -30,45 +30,48 @@ def decode(input):
 
     params = {}
     end = False
-    while not end and index < len(input):
-        key = chr(input[index])
-        index += 1
-        if key == "S":
-            (length,) = struct.unpack_from("B", input, offset=index)
+    try:
+        while not end and index < len(input):
+            key = chr(input[index])
             index += 1
-            (source,) = struct.unpack_from("{}s".format(length), input, offset=index)
-            params["source"] = source
-            index += length
-        elif key == "D":
-            (length,) = struct.unpack_from("B", input, offset=index)
-            index += 1
-            (destination,) = struct.unpack_from("{}s".format(length), input, offset=index)
-            params["destination"] = destination
-            index += length
-        elif key == "T":
-            (length,) = struct.unpack_from("B", input, offset=index)
-            index += 1
-            (id,) = struct.unpack_from("{}s".format(length), input, offset=index)
-            params["id"] = id
-            index += length
-        elif key == "P":
-            (length,) = struct.unpack_from("I", input, offset=index)
-            index += 4
-            (params["data"],) = struct.unpack_from("{}s".format(length), input, offset=index)
-            index += length
-        elif key == "K":
-            (length,) = struct.unpack_from("B", input, offset=index)
-            index += 1
-            (checksum,) = struct.unpack_from(">H", input, offset=index)
-            params["checksum"] = bytes("{:04x}".format(checksum), "ascii")
-            index += length
-        elif key == "G":
-            k1, k2 = struct.unpack_from("c c", input, offset=index)
-            if k1 == '0' and k2 == '1':
-                end = True
-            index += 3
-
-    return params
+            if key == "S":
+                (length,) = struct.unpack_from("B", input, offset=index)
+                index += 1
+                (source,) = struct.unpack_from("{}s".format(length), input, offset=index)
+                params["source"] = source
+                index += length
+            elif key == "D":
+                (length,) = struct.unpack_from("B", input, offset=index)
+                index += 1
+                (destination,) = struct.unpack_from("{}s".format(length), input, offset=index)
+                params["destination"] = destination
+                index += length
+            elif key == "T":
+                (length,) = struct.unpack_from("B", input, offset=index)
+                index += 1
+                (id,) = struct.unpack_from("{}s".format(length), input, offset=index)
+                params["id"] = id
+                index += length
+            elif key == "P":
+                (length,) = struct.unpack_from("I", input, offset=index)
+                index += 4
+                (params["data"],) = struct.unpack_from("{}s".format(length), input, offset=index)
+                index += length
+            elif key == "K":
+                (length,) = struct.unpack_from("B", input, offset=index)
+                index += 1
+                (checksum,) = struct.unpack_from(">H", input, offset=index)
+                params["checksum"] = bytes("{:04x}".format(checksum), "ascii")
+                index += length
+            elif key == "G":
+                k1, k2 = struct.unpack_from("c c", input, offset=index)
+                if k1 == '0' and k2 == '1':
+                    end = True
+                index += 3
+        params['read'] = index;
+        return params
+    except:
+        return None
 
 
 # Encodes data into a binary string
