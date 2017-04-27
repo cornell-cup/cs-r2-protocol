@@ -100,29 +100,39 @@ namespace R2Protocol {
             char key = input[index++];
             if (key == 'S') {
                 uint8_t len;
+                if (index >= input.size()) return -1;
                 index += readByte(input, index, len);
+                if (index + len - 1 >= input.size()) return -1;
                 index += readString(input, index, len, params.source);
             }
             else if (key == 'D') {
                 uint8_t len;
+                if (index >= input.size()) return -1;
                 index += readByte(input, index, len);
+                if (index + len - 1 >= input.size()) return -1;
                 index += readString(input, index, len, params.destination);
             }
             else if (key == 'T') {
                 uint8_t len;
+                if (index >= input.size()) return -1;
                 index += readByte(input, index, len);
+                if (index + len - 1 >= input.size()) return -1;
                 index += readString(input, index, len, params.id);
             }
             else if (key == 'P') {
                 uint32_t len;
+                if (index + 3 >= input.size()) return -1;
                 index += readInt(input, index, len);
+                if (index + len - 1 >= input.size()) return -1;
                 index += readBytes(input, index, len, params.data);
             }
             else if (key == 'K') {
                 uint16_t checksum;
                 uint16_t computedChecksum = computeChecksum(input, start, index - 1);
                 uint8_t len;
+                if (index >= input.size()) return -1;
                 index += readByte(input, index, len);
+                if (index + len - 1 >= input.size()) return -1;
                 index += readShort(input, index, checksum);
                 if (!skip_checksum && computedChecksum != checksum) {
                     printf("Checksum does not match %d != %d\n", computedChecksum, checksum);
