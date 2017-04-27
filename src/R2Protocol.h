@@ -24,6 +24,7 @@ void R2ProtocolChecksumToHex(char * str, uint16_t checksum) {
     str[1] = hex[(checksum >>  8) & 0xf];
     str[2] = hex[(checksum >>  4) & 0xf];
     str[3] = hex[(checksum >>  0) & 0xf];
+    str[4] = 0;
 }
 
 /**

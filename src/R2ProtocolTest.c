@@ -16,7 +16,10 @@ int main(int argc, char ** argv) {
 
         FILE * fout = fopen(argv[3], "wb");
 
+        uint8_t packetData[256];
         struct R2ProtocolPacket params;
+        params.data_len = 256;
+        params.data = packetData;
         if (R2ProtocolDecode(data, data_len, &params) >= 0) {
             fwrite("start\n", 1, 6, fout);
             fwrite("source = ", 1, 9, fout);
