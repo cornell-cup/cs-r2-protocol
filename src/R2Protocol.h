@@ -6,13 +6,25 @@
 #include <stdlib.h>
 #include <string.h>
 
+#ifndef R2_PROTOCOL_MAX_SOURCE_LENGTH
+#   define R2_PROTOCOL_MAX_SOURCE_LENGTH 256
+#endif
+#ifndef R2_PROTOCOL_MAX_DESTINATION_LENGTH
+#   define R2_PROTOCOL_MAX_DESTINATION_LENGTH 256
+#endif
+#ifndef R2_PROTOCOL_MAX_ID_LENGTH
+#   define R2_PROTOCOL_MAX_ID_LENGTH 256
+#endif
+#ifndef R2_PROTOCOL_MAX_CHECKSUM_LENGTH
+#   define R2_PROTOCOL_MAX_CHECKSUM_LENGTH 256
+#endif
 struct R2ProtocolPacket {
-    char source[256];
-    char destination[256];
-    char id[256];
+    char source[R2_PROTOCOL_MAX_SOURCE_LENGTH];
+    char destination[R2_PROTOCOL_MAX_DESTINATION_LENGTH];
+    char id[R2_PROTOCOL_MAX_ID_LENGTH];
     uint32_t data_len;
     uint8_t * data;
-    char checksum[256];
+    char checksum[R2_PROTOCOL_MAX_CHECKSUM_LENGTH];
 };
 
 /**
