@@ -141,6 +141,7 @@ namespace R2Protocol {
                 params.checksum = checksumToHex(checksum);
             }
             else if (key == 'G') {
+                if (index + 1 >= input.size()) return -1;
                 if (index + 1 < input.size() && input[index] == '0' && input[index + 1] == '1') {
                     index += 2;
                     end = 1;

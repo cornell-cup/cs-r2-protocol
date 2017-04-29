@@ -32,34 +32,42 @@ int32_t R2ProtocolDecode(const uint8_t * input, uint32_t input_len, struct R2Pro
     if (start == 0) {
         return -1;
     }
-    //uint32_t start = startPos - input;
 
     char * index = start + 3;
     char end = 0;
+    char * endindex = start + input_len;
     while (!end && index - (char *) input < input_len) {
         char key = *(index++);
         if (key == 'S') {
+            if (index >= endindex) return -1;
             uint8_t len = (uint8_t) (*(index++));
+            if (index + len - 1 >= endindex) return -1;
             strncpy(params->source, index, len);
             params->source[len] = 0;
             index += len;
         }
         else if (key == 'D') {
+            if (index >= endindex) return -1;
             uint8_t len = (uint8_t) (*(index++));
+            if (index + len - 1 >= endindex) return -1;
             strncpy(params->destination, index, len);
             params->destination[len] = 0;
             index += len;
         }
         else if (key == 'T') {
+            if (index >= endindex) return -1;
             uint8_t len = (uint8_t) (*(index++));
+            if (index + len - 1 >= endindex) return -1;
             strncpy(params->id, index, len);
             params->id[len] = 0;
             index += len;
         }
         else if (key == 'P') {
+            if (index >= endindex) return -1;
             uint8_t len = ((uint8_t) (*index)) | ((uint8_t) (*(index + 1)) << 8) |
                     ((uint8_t) (*(index + 2)) << 16) | ((uint8_t) (*(index + 3)) << 24);
             index += 4;
+            if (index + len - 1 >= endindex) return -1;
             if (len > params->data_len) {
                 len = params->data_len;
             }
@@ -69,7 +77,9 @@ int32_t R2ProtocolDecode(const uint8_t * input, uint32_t input_len, struct R2Pro
         }
         else if (key == 'K') {
             uint16_t computedChecksum = R2ProtocolComputeChecksum((uint8_t *) start, 0, index - 1 - start);
+            if (index >= endindex) return -1;
             uint8_t len = (uint8_t) (*(index++));
+            if (index + len - 1 >= endindex) return -1;
             uint16_t checksum = ((uint8_t) (*index) << 8) | ((uint8_t) (*(index + 1)));
             index += len;
             if (computedChecksum != checksum) {
@@ -79,6 +89,7 @@ int32_t R2ProtocolDecode(const uint8_t * input, uint32_t input_len, struct R2Pro
             R2ProtocolChecksumToHex(params->checksum, checksum);
         }
         else if (key == 'G') {
+            if (index + 1 >= endindex) return -1;
             if (index - (char *) input + 2 < input_len &&
                     *(index + 1) == '0' && *(index + 2) == '1') {
                 index += 2;
