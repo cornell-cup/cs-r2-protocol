@@ -1,6 +1,10 @@
 #ifndef _R2_PROTOCOL
 #define _R2_PROTOCOL
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -54,5 +58,9 @@ uint32_t R2ProtocolWriteInt(uint8_t * buf, uint32_t value);
  * Encode the data, returning the size of the encoded data, or negative if data failed to be encoded
  */
 int32_t R2ProtocolEncode(struct R2ProtocolPacket * params, uint8_t * output, uint32_t output_len);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif
