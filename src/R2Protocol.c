@@ -13,13 +13,13 @@ uint16_t R2ProtocolComputeChecksum(const uint8_t * data, uint32_t start, uint32_
     uint32_t index;
     uint32_t sum = 0;
     for (index = start; index < end - 1; index+=2) {
-        sum += (data[index] << 8) | data[index+1];
+        sum += (((uint32_t) data[index]) << 8) | ((uint32_t) data[index+1]);
         if (sum > 0xffff) {
             sum -= 0xffff;
         }
     }
     if (index < end) { // Odd byte
-        sum += data[index] << 8;
+        sum += ((uint32_t) data[index]) << 8;
         if (sum > 0xffff) {
             sum -= 0xffff;
         }
@@ -81,7 +81,7 @@ int32_t R2ProtocolDecode(const uint8_t * input, uint32_t input_len, struct R2Pro
             if (index >= endindex) return -1;
             uint8_t len = (uint8_t) (*(index++));
             if (index + len - 1 >= endindex) return -1;
-            uint16_t checksum = ((uint8_t) (*index) << 8) | ((uint8_t) (*(index + 1)));
+            uint16_t checksum = (((uint16_t) (*index)) << 8) | ((uint16_t) (*(index + 1)));
             index += len;
             if (computedChecksum != checksum) {
                 printf("Checksum does not match %04x != %04x\n", computedChecksum, checksum);
