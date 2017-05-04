@@ -34,6 +34,7 @@ int32_t R2ProtocolDecode(const uint8_t * input, uint32_t input_len, struct R2Pro
     }
 
     char * index = start + 3;
+    char checksumMatches = 0;
     char end = 0;
     char * endindex = start + input_len;
     while (!end && index - (char *) input < input_len) {
@@ -86,23 +87,30 @@ int32_t R2ProtocolDecode(const uint8_t * input, uint32_t input_len, struct R2Pro
                 printf("Checksum does not match %04x != %04x\n", computedChecksum, checksum);
                 return -1;
             }
+            else {
+                checksumMatches = 1;
+            }
             R2ProtocolChecksumToHex(params->checksum, checksum);
         }
         else if (key == 'G') {
             if (index + 1 >= endindex) return -1;
-            if (index - (char *) input + 2 < input_len &&
-                    *(index + 1) == '0' && *(index + 2) == '1') {
+            if (*(index) == '0' && *(index + 1) == '1') {
                 index += 2;
                 end = 1;
             }
         }
     }
-    return index - (char *) input;
+    if (end == 1 && checksumMatches == 1) {
+        return index - (char *) input;
+    }
+    else {
+        return -1;
+    }
 }
 
 uint32_t R2ProtocolWriteString(uint8_t * buf, const char * str) {
     uint32_t str_len = strlen(str);
-    int i;
+    uint32_t i;
     for (i = 0; i < str_len; i++) {
         buf[i] = (uint8_t) str[i];
     }
@@ -115,7 +123,7 @@ uint32_t R2ProtocolWriteByte(uint8_t * buf, uint8_t value) {
 }
 
 uint32_t R2ProtocolWriteBytes(uint8_t * buf, uint8_t  * value, uint32_t value_len) {
-    int i;
+    uint32_t i;
     for (i = 0; i < value_len; i++) {
         buf[i] = value[i];
     }
