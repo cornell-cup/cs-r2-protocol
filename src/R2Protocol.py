@@ -6,18 +6,18 @@ def computeChecksum(data):
     l = len(data)
     sum = 0
     while i < l - 1:
-        sum += (data[i] << 8) | data[i+1]
+        sum += (ord(data[i]) << 8) | ord(data[i+1])
         if sum > 0xffff:
             sum -= 0xffff
-
+        
         i += 2
-
+    
     if i < l:
-        sum += data[i] << 8
+        sum += ord(data[i]) << 8
         if sum > 0xffff:
             sum -= 0xffff
 
-    return sum
+return sum
 
 
 # Decodes data or returns None
@@ -25,9 +25,9 @@ def decode(input):
     start = input.find(bytes("G00", "ascii"))
     if start < 0:
         return None
-
+    
     index = start + 3
-
+    
     params = {}
     end = False
     try:
@@ -77,37 +77,38 @@ def decode(input):
 # Encodes data into a binary string
 def encode(source, destination, id, data):
     length = sum([
-        3, # G00 start
-        2, # S{length1} source
-        len(source), # source
-        2, # D{length1} destination
-        len(destination), # destination
-        2, # T{length1} transaction id
-        len(id), # transaction id
-        5, # P{length4}
-        len(data), # data
-        4, # K{length}{data} checksum
-        3 # G01 end
-    ])
-    body = struct.pack("< 3s c B {}s c B {}s c B {}s c I {}s".format(
-            len(source),
-            len(destination),
-            len(id),
-            len(data)
-        ),
-        bytes("G00", "ascii"),
-        b'S', len(source), source,
-        b'D', len(destination), destination,
-        b'T', len(id), id,
-        b'P', len(data), data
-    )
-    checksum = struct.pack("> H", computeChecksum(body))
-    encoded = struct.pack("< {}s c B {}s 3s".format(
-            len(body),
-            len(checksum)
-        ),
-        body,
-        bytes('K', "ascii"), 2, checksum,
-        bytes("G01", "ascii")
-    )
-    return encoded
+                  3, # G00 start
+                  2, # S{length1} source
+                  len(source), # source
+                  2, # D{length1} destination
+                  len(destination), # destination
+                  2, # T{length1} transaction id
+                  len(id), # transaction id
+                  5, # P{length4}
+                  len(data), # data
+                  4, # K{length}{data} checksum
+                  3 # G01 end
+                  ])
+                  body = struct.pack("< 3s c B {}s c B {}s c B {}s c I {}s".format(
+                                                                                   len(source),
+                                                                                   len(destination),
+                                                                                   len(id),
+                                                                                   len(data)
+                                                                                   ),
+                                     bytes("G00").encode("ascii"),
+                                     b'S', len(source), source,
+                                     b'D', len(destination), destination,
+                                     b'T', len(id), id,
+                                     b'P', len(data), data
+                                     )
+                  checksum = struct.pack("> H", computeChecksum(body))
+                  encoded = struct.pack("< {}s c B {}s 3s".format(
+                                                                  len(body),
+                                                                  len(checksum)
+                                                                  ),
+                                        body,
+                                        bytes('K').encode("ascii"), 2, checksum,
+                                        bytes("G01").encode("ascii")
+                                        )
+                  return encoded
+
