@@ -22,7 +22,7 @@ return sum
 
 # Decodes data or returns None
 def decode(input):
-    start = input.find(bytes("G00", "ascii"))
+    start = input.find(bytes("G00").encode("ascii"))
     if start < 0:
         return None
     
@@ -32,7 +32,7 @@ def decode(input):
     end = False
     try:
         while not end and index < len(input):
-            key = chr(input[index])
+            key = input[index]
             index += 1
             if key == "S":
                 (length,) = struct.unpack_from("B", input, offset=index)
@@ -57,12 +57,12 @@ def decode(input):
                 index += 4
                 (params["data"],) = struct.unpack_from("{}s".format(length), input, offset=index)
                 index += length
-            elif key == "K":
-                (length,) = struct.unpack_from("B", input, offset=index)
-                index += 1
-                (checksum,) = struct.unpack_from(">H", input, offset=index)
-                params["checksum"] = bytes("{:04x}".format(checksum), "ascii")
-                index += length
+            # elif key == "K":
+            #     (length,) = struct.unpack_from("B", input, offset=index)
+            #     index += 1
+            #     (checksum,) = struct.unpack_from(">H", input, offset=index)
+            #     params["checksum"] = bytes("{:04x}".format(checksum), "ascii")
+            #     index += length
             elif key == "G":
                 k1, k2 = struct.unpack_from("c c", input, offset=index)
                 if k1 == '0' and k2 == '1':
